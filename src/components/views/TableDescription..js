@@ -13,7 +13,7 @@ const TableDescription = props => {
           <Card.Title as="h3">Table {props.id}</Card.Title>
           <Card.Text className ="mx-4"><strong>Status: </strong>{props.status}</Card.Text>
         </div>
-        <Button variant="primary" as={Link} to={`/table/${props.id}`}>Show more</Button>
+        <Button variant="primary" as={Link} to={`/tables/${props.id}`}>Show more</Button>
       </Card.Body>
   </Card>
    

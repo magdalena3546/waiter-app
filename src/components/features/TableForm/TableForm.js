@@ -3,84 +3,86 @@ import { Button, Form, Row, Col} from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import { getAllStatuses } from '../../../redux/statusesRedux';
 import shortid from 'shortid';
-import { useNavigate, useParams } from "react-router-dom";
-import { getTableById } from '../../../redux/tablesRedux';
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { fetchEditTable } from '../../../redux/tablesRedux';
 import styles from './TableForm.module.scss'
-
-const TableForm = () => {
+const TableForm = ({action, ...props}) => {
   const statuses = useSelector(getAllStatuses);
-  const {id} = useParams();
-  const table = useSelector(state => getTableById(state, id));
-  const [ statusData, setStatusData ] = useState(table.status);
-  const [ peopleAmountData, setPeopleAmountData] = useState(table.peopleAmount);
-  const [ maxPeopleAmountData, setMaxPeopleAmountData ] = useState(table.maxPeopleAmount);
-  const [ billData, setBillData] = useState(table.bill);
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const id = props.id;
+ 
+  const [ status, setStatus ] = useState(props.status || '');
+  const [ peopleAmount, setPeopleAmount] = useState(props.people || '' );
+  const [ maxPeopleAmount, setMaxPeopleAmount ] = useState(props.maxPeople || '');
+  const [ bill, setBill] = useState(props.bill || 0);
+ 
+
   const handleChangeStatus = e => {
-    setStatusData(e.target.value);
+    setStatus(e.target.value);
     if (e.target.value === "Cleaning" || e.target.value === "Free"){
-      setPeopleAmountData("0");
+      setPeopleAmount("0");
+    }
+    if (e.target.value === "Busy") {
+      setBill("0");
     }
   };
   const handleChangeMaxPeopleAmount = e => {
-    setMaxPeopleAmountData(e.target.value);
-    if (e.target.value < peopleAmountData){
-      setPeopleAmountData(e.target.value);
+    const value = Math.max(0, Math.min(10, Number(e.target.value)));
+    setMaxPeopleAmount(value); 
+    if(value < peopleAmount){
+      setPeopleAmount(value);
     }
   };
 
-  const handleSubmit = () => {
-    dispatch(fetchEditTable({statusData, peopleAmountData, maxPeopleAmountData, billData}, id));
-    navigate('/');
+  const handleChangePeopleAmount = e => {
+    const value = Math.max(0, Math.min(maxPeopleAmount, Number(e.target.value)));
+    setPeopleAmount(value); 
   };
-  
-  return(
-    <form onSubmit={handleSubmit}>
-      <h1>{`Table ${table.id}`}</h1>
-      <Row>
-      <Col xs='auto'>
-        <Form.Label><strong>Status:</strong></Form.Label>
-      </Col>
-      <Col xs='auto'>
-        <Form.Control as="select" value={statusData} onChange={handleChangeStatus}>
-            {statuses.map(elm => <option key={shortid()} value={elm}>{elm}</option>)}
-        </Form.Control>
+
+  const handleSubmit = () => {
+    action({id, status, peopleAmount, maxPeopleAmount, bill});
+  };
+
+    return(
+      <form onSubmit={handleSubmit}>
+        <h1>{`Table ${id}`}</h1>
+        <Row className="my-2">
+        <Col className={styles.col} xs='auto'>
+          <Form.Label><strong>Status:</strong></Form.Label>
         </Col>
-      </Row>
-      <Row>
-        <Col xs='auto'>
-          <Form.Label><strong>People:</strong></Form.Label>
-        </Col>
-        <Col xs='auto'>
-          <Form.Control value={peopleAmountData} onChange={e => setPeopleAmountData(e.target.value)}/>
-        </Col>
-        <Col xs='auto'>
-          <span>/</span>
-        </Col>
-        <Col xs='auto'>
-          <Form.Control className = {styles.input} value={maxPeopleAmountData} onChange={handleChangeMaxPeopleAmount}/>
-        </Col>
-      </Row>
-      { statusData === "Busy" &&
-      <Row>
-        <Col xs='auto'>
-          <Form.Label><strong>Bill:</strong></Form.Label>
-        </Col>
-        <Col xs='auto'>
-          <span className="m-0">$</span>
-        </Col>
-        <Col xs='auto'>
-          <Form.Control value={billData} onChange={e => setBillData(e.target.value)}></Form.Control>
-        </Col>
-      </Row>
-      }
-      <Button type='submit' className="mt-4">Update</Button>
-    </form> 
- 
-  )
+        <Col className={styles.col} xs='auto'>
+          <Form.Control as="select" value={status} onChange={handleChangeStatus}>
+              {statuses.map(elm => <option key={shortid()} value={elm}>{elm}</option>)}
+          </Form.Control>
+          </Col>
+        </Row>
+        <Row>
+          <Col className={styles.col} xs='auto'>
+            <Form.Label><strong>People:</strong></Form.Label>
+          </Col>
+          <Col className={styles.col} xs='auto'>
+            <Form.Control className = {styles.input} value={peopleAmount} onChange={handleChangePeopleAmount}/>
+          </Col>
+          <Col className={styles.col} xs='auto'>
+            <span className={styles.span}>/</span>
+          </Col>
+          <Col className={styles.col} xs='auto'>
+            <Form.Control className = {styles.input} value={maxPeopleAmount} onChange={handleChangeMaxPeopleAmount}/>
+          </Col>
+        </Row>
+        { status === "Busy" &&
+        <Row className="my-2">
+          <Col className={styles.col} xs='auto'>
+            <Form.Label><strong>Bill:</strong></Form.Label>
+          </Col>
+          <Col className={styles.col} xs='auto'>
+            <span className={styles.span}>$</span>
+          </Col>
+          <Col className={styles.col} xs='auto'>
+            <Form.Control  className={styles.input} value={bill} onChange={e => setBill(e.target.value)}></Form.Control>
+          </Col>
+        </Row>
+        }
+        <Button type='submit' className="mt-4">Update</Button>
+      </form> 
+    )
 };
 export default TableForm;

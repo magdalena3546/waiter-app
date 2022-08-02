@@ -1,8 +1,9 @@
-import TableForm from "../features/TableForm/TableForm";
+import EditTable from "../features/EditTable";
+
 
 const Table = () => {
   return ( 
-  <TableForm />
+  <EditTable />
   )
 };
 export default Table;
