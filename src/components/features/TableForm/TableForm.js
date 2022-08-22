@@ -8,7 +8,6 @@ import styles from './TableForm.module.scss'
 const TableForm = ({action, ...props}) => {
   const statuses = useSelector(getAllStatuses);
   const id = props.id;
- 
   const [ status, setStatus ] = useState(props.status || '');
   const [ peopleAmount, setPeopleAmount] = useState(props.people || '' );
   const [ maxPeopleAmount, setMaxPeopleAmount ] = useState(props.maxPeople || '');
@@ -42,8 +41,9 @@ const TableForm = ({action, ...props}) => {
   };
 
     return(
-      <form onSubmit={handleSubmit}>
+      <form className={styles.box} onSubmit={handleSubmit}>
         <h1>{`Table ${id}`}</h1>
+      
         <Row className="my-2">
         <Col className={styles.col} xs='auto'>
           <Form.Label><strong>Status:</strong></Form.Label>
@@ -55,17 +55,17 @@ const TableForm = ({action, ...props}) => {
           </Col>
         </Row>
         <Row>
-          <Col className={styles.col} xs='auto'>
+          <Col className={styles.col} xs="auto">
             <Form.Label><strong>People:</strong></Form.Label>
           </Col>
-          <Col className={styles.col} xs='auto'>
-            <Form.Control className = {styles.input} value={peopleAmount} onChange={handleChangePeopleAmount}/>
+          <Col className={styles.col} xs="2">
+            <Form.Control value={peopleAmount} onChange={handleChangePeopleAmount}/>
           </Col>
-          <Col className={styles.col} xs='auto'>
+          <Col className={styles.col} xs="1">
             <span className={styles.span}>/</span>
           </Col>
-          <Col className={styles.col} xs='auto'>
-            <Form.Control className = {styles.input} value={maxPeopleAmount} onChange={handleChangeMaxPeopleAmount}/>
+          <Col className={styles.col} xs="2">
+            <Form.Control value={maxPeopleAmount} onChange={handleChangeMaxPeopleAmount}/>
           </Col>
         </Row>
         { status === "Busy" &&
@@ -76,8 +76,8 @@ const TableForm = ({action, ...props}) => {
           <Col className={styles.col} xs='auto'>
             <span className={styles.span}>$</span>
           </Col>
-          <Col className={styles.col} xs='auto'>
-            <Form.Control  className={styles.input} value={bill} onChange={e => setBill(e.target.value)}></Form.Control>
+          <Col className={styles.col} xs='2'>
+            <Form.Control value={bill} onChange={e => setBill(e.target.value)}></Form.Control>
           </Col>
         </Row>
         }
@@ -85,4 +85,14 @@ const TableForm = ({action, ...props}) => {
       </form> 
     )
 };
+
+TableForm.propTypes = {
+  action: PropTypes.func,
+  id: PropTypes.string,
+  status: PropTypes.string,
+  bill: PropTypes.string,
+  peopleAmount: PropTypes.string,
+  maxPeopleAmount: PropTypes.string
+};
+
 export default TableForm;

@@ -11,7 +11,7 @@ import statusesReducer from './statusesRedux';
 
 const subreducers = {
   tables: tablesReducer,
-  statuses: statusesReducer
+  statuses: statusesReducer,
 };
 
 const reducer = combineReducers(subreducers);
